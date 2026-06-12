@@ -1,0 +1,704 @@
+Here is the updated, expanded code file. I have added **three more essential components** to the script to make the puzzle significantly more challenging and complete:
+
+1. **`Model` Initialization block:** Defines the network endpoints.
+2. **`compile` block:** Defines how the model optimizes.
+3. **`fit` block:** Handles data passing and training parameters.
+
+Students must now arrange **8 blocks** in total, testing their complete knowledge of the Keras workflow from layer definitions to final model compilation and training.
+
+### 🛠️ Updated HTML Code (`index.html`)
+
+Save this complete code into your `index.html` file and push the updates to your GitHub repository:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Challenge: The Autoencoder Machine</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent-blue: #38bdf8;
+            --accent-green: #4ade80;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --gold: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            max-width: 800px;
+        }
+
+        h1 {
+            color: var(--accent-blue);
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .auth-container h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-blue);
+        }
+
+        .input-group {
+            margin: 1.5rem 0;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            text-align: center;
+        }
+
+        .input-group input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .main-layout {
+            display: none;
+            width: 100%;
+            max-width: 1300px;
+            grid-template-columns: 3fr 1.2fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .game-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .dashboard-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            color: var(--accent-purple);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .puzzle-zone {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .puzzle-zone {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .column-title {
+            font-size: 1rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .pool, .slots {
+            background: rgba(15, 23, 42, 0.4);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 600px;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .slots {
+            border-style: dashed;
+        }
+
+        .code-block {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem 1rem;
+            cursor: grab;
+            user-select: none;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            white-space: pre;
+            position: relative;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        .code-block:active {
+            cursor: grabbing;
+        }
+
+        .code-block:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+        }
+
+        .code-block.dragging {
+            opacity: 0.5;
+            transform: scale(0.98);
+        }
+
+        .slot-container {
+            border: 1px dashed #334155;
+            border-radius: 6px;
+            min-height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(30, 41, 59, 0.3);
+            position: relative;
+        }
+
+        .slot-container::before {
+            content: attr(data-label);
+            position: absolute;
+            color: #475569;
+            font-size: 0.8rem;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .slot-container .code-block {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        button {
+            padding: 0.75rem 2rem;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #0f172a;
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            background: #7dd3fc;
+        }
+
+        .btn-check {
+            background: var(--accent-green);
+            color: #0f172a;
+        }
+
+        .btn-check:hover {
+            background: #22c55e;
+            box-shadow: 0 0 15px rgba(74, 222, 128, 0.4);
+        }
+
+        .btn-reset {
+            background: transparent;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-main);
+        }
+
+        .btn-clear-scores {
+            background: transparent;
+            color: #f87171;
+            border: 1px dashed #ef4444;
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .btn-clear-scores:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .feedback {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+            display: none;
+            text-align: center;
+        }
+
+        .feedback.success {
+            background: rgba(74, 222, 128, 0.15);
+            border: 1px solid var(--accent-green);
+            color: var(--accent-green);
+            display: block;
+        }
+
+        .feedback.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid #ef4444;
+            color: #f87171;
+            display: block;
+        }
+
+        .leaderboard-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            display: grid;
+            grid-template-columns: 0.5fr 2fr 1fr;
+            align-items: center;
+            background: #0f172a;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-item.top-rank {
+            border-color: var(--gold);
+            background: rgba(245, 158, 11, 0.05);
+        }
+
+        .rank {
+            font-weight: bold;
+            color: var(--accent-blue);
+        }
+
+        .leaderboard-item.top-rank .rank {
+            color: var(--gold);
+        }
+
+        .player-name {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 5px;
+        }
+
+        .player-time {
+            text-align: right;
+            font-family: monospace;
+            color: var(--accent-green);
+            font-weight: bold;
+        }
+
+        .stats-summary {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: auto;
+            padding-top: 1.5rem;
+            border-top: 1px dashed var(--border-color);
+            text-align: center;
+        }
+        
+        #timer-display {
+            font-size: 1.2rem;
+            font-family: monospace;
+            color: var(--accent-blue);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header id="main-header">
+        <h1>🧩 Deep Learning Code Challenge</h1>
+        <p class="subtitle">Construct a complete Keras Autoencoder workflow. Order all layers, mapping declarations, optimization configurations, and execution loops perfectly.</p>
+    </header>
+
+    <div class="auth-container" id="auth-panel">
+        <h2>Enter Workspace</h2>
+        <p class="subtitle" style="font-size: 0.9rem;">Input your name or candidate identifier to sync your session timer.</p>
+        <div class="input-group">
+            <input type="text" id="username" placeholder="Student Name" autocomplete="off" maxlength="20">
+        </div>
+        <button class="btn-primary" onclick="startGame()">Initialize Challenge</button>
+    </div>
+
+    <div class="main-layout" id="game-panel">
+        
+        <div class="game-container">
+            <div class="section-title">
+                <span>⚡</span> Execution Pipeline Assembly 
+                <span style="margin-left: auto; font-size: 0.95rem; color: var(--text-muted)">Elapsed: <span id="timer-display">00:00</span></span>
+            </div>
+
+            <div class="puzzle-zone">
+                <div>
+                    <div class="column-title">🔀 Shuffled Code Segments</div>
+                    <div class="pool" id="source-pool">
+                        <div class="code-block" draggable="true" id="block-4" data-order="4">
+output = Dense(784, activation='sigmoid')(x)</div>
+                        
+                        <div class="code-block" draggable="true" id="block-6" data-order="6">
+autoencoder.compile(
+    optimizer='adam',
+    loss='binary_crossentropy'
+)</div>
+
+                        <div class="code-block" draggable="true" id="block-1" data-order="1">
+x = Dense(128, activation='relu')(input_img)
+x = Dense(64, activation='relu')(x)</div>
+
+                        <div class="code-block" draggable="true" id="block-5" data-order="5">
+autoencoder = Model(input_img, output)</div>
+
+                        <div class="code-block" draggable="true" id="block-0" data-order="0">
+input_img = Input(shape=(784,))</div>
+
+                        <div class="code-block" draggable="true" id="block-7" data-order="7">
+autoencoder.fit(
+    x_train,
+    x_train,
+    epochs=10,
+    batch_size=256
+)</div>
+
+                        <div class="code-block" draggable="true" id="block-3" data-order="3">
+x = Dense(64, activation='relu')(latent)
+x = Dense(128, activation='relu')(x)</div>
+
+                        <div class="code-block" draggable="true" id="block-2" data-order="2">
+latent = Dense(10, activation='relu')(x)</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="column-title">📋 Sequential Target Order</div>
+                    <div class="slots" id="drop-slots">
+                        <div class="slot-container" data-label="Step 1: Network Entry" data-slot="0"></div>
+                        <div class="slot-container" data-label="Step 2: Encoder Structure" data-slot="1"></div>
+                        <div class="slot-container" data-label="Step 3: Bottleneck Layer" data-slot="2"></div>
+                        <div class="slot-container" data-label="Step 4: Decoder Structure" data-slot="3"></div>
+                        <div class="slot-container" data-label="Step 5: Output Dimension" data-slot="4"></div>
+                        <div class="slot-container" data-label="Step 6: Topology Mapping" data-slot="5"></div>
+                        <div class="slot-container" data-label="Step 7: Hyperparameters" data-slot="6"></div>
+                        <div class="slot-container" data-label="Step 8: Engine Execution" data-slot="7"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn-reset" onclick="resetGame()">🔄 Reset Blocks</button>
+                <button class="btn-check" onclick="checkPipeline()">🚀 Submit Pipeline Architecture</button>
+            </div>
+
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <div class="dashboard-container">
+            <div class="section-title">🏆 Top Performers</div>
+            <ul class="leaderboard-list" id="leaderboard-ui"></ul>
+            
+            <div class="stats-summary">
+                Records preserve the quickest successful compilations using local storage.
+                <button class="btn-clear-scores" onclick="clearLeaderboard()">⚠️ Clear Leaderboard</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentUsername = "";
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let isCompleted = false;
+
+        let highScores = JSON.parse(localStorage.getItem('nn_leaderboard')) || [];
+
+        const blocks = document.querySelectorAll('.code-block');
+        const slots = document.querySelectorAll('.slot-container');
+        const pool = document.getElementById('source-pool');
+        const feedback = document.getElementById('feedback');
+
+        blocks.forEach(block => {
+            block.addEventListener('dragstart', dragStart);
+            block.addEventListener('dragend', dragEnd);
+            block.addEventListener('click', toggleSelect);
+        });
+
+        slots.forEach(slot => {
+            slot.addEventListener('dragover', dragOver);
+            slot.addEventListener('dragenter', dragEnter);
+            slot.addEventListener('dragleave', dragLeave);
+            slot.addEventListener('drop', dragDrop);
+            slot.addEventListener('click', handleSlotClick);
+        });
+
+        pool.addEventListener('dragover', dragOver);
+        pool.addEventListener('drop', dragDropToPool);
+        pool.addEventListener('click', handlePoolClick);
+
+        let draggedBlock = null;
+        let selectedBlock = null;
+
+        function startGame() {
+            const nameInput = document.getElementById('username').value.trim();
+            if(!nameInput) {
+                alert("Please enter a valid student name or identifier.");
+                return;
+            }
+            currentUsername = nameInput;
+            document.getElementById('auth-panel').style.display = 'none';
+            document.getElementById('game-panel').style.display = 'grid';
+            
+            renderLeaderboard();
+            startTimer();
+        }
+
+        function startTimer() {
+            secondsElapsed = 0;
+            isCompleted = false;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                document.getElementById('timer-display').innerText = formatTime(secondsElapsed);
+            }, 1000);
+        }
+
+        function formatTime(sec) {
+            let mins = Math.floor(sec / 60);
+            let secs = sec % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function dragStart(e) {
+            draggedBlock = this;
+            this.classList.add('dragging');
+        }
+
+        function dragEnd() {
+            this.classList.remove('dragging');
+            draggedBlock = null;
+        }
+
+        function dragOver(e) {
+            e.preventDefault();
+        }
+
+        function dragEnter(e) { e.preventDefault(); }
+        function dragLeave() {}
+
+        function dragDrop(e) {
+            if (!this.hasChildNodes() && draggedBlock) {
+                this.appendChild(draggedBlock);
+            }
+        }
+
+        function dragDropToPool(e) {
+            if (draggedBlock) {
+                pool.appendChild(draggedBlock);
+            }
+        }
+
+        function toggleSelect(e) {
+            e.stopPropagation();
+            if (selectedBlock) {
+                selectedBlock.style.borderColor = "";
+            }
+            if (selectedBlock === this) {
+                selectedBlock = null;
+                return;
+            }
+            selectedBlock = this;
+            this.style.borderColor = "var(--accent-purple)";
+        }
+
+        function handleSlotClick(e) {
+            if (selectedBlock && !this.hasChildNodes()) {
+                this.appendChild(selectedBlock);
+                selectedBlock.style.borderColor = "";
+                selectedBlock = null;
+            }
+        }
+
+        function handlePoolClick(e) {
+            if (selectedBlock) {
+                pool.appendChild(selectedBlock);
+                selectedBlock.style.borderColor = "";
+                selectedBlock = null;
+            }
+        }
+
+        function checkPipeline() {
+            if(isCompleted) return;
+
+            let correctCount = 0;
+            let totalSlots = slots.length;
+            let filledSlots = 0;
+
+            slots.forEach(slot => {
+                if (slot.hasChildNodes()) {
+                    filledSlots++;
+                    const slotIndex = parseInt(slot.getAttribute('data-slot'));
+                    const blockOrder = parseInt(slot.firstChild.getAttribute('data-order'));
+                    if (slotIndex === blockOrder) {
+                        correctCount++;
+                    }
+                }
+            });
+
+            if (filledSlots < totalSlots) {
+                feedback.className = "feedback error";
+                feedback.innerText = "Submission Failed: All configuration slots must contain an operational script block.";
+                return;
+            }
+
+            if (correctCount === totalSlots) {
+                clearInterval(timerInterval);
+                isCompleted = true;
+                feedback.className = "feedback success";
+                feedback.innerText = `Verification Successful! Pipeline fully validated in ${formatTime(secondsElapsed)}.`;
+                
+                highScores.push({ name: currentUsername, time: secondsElapsed });
+                highScores.sort((a, b) => a.time - b.time);
+                localStorage.setItem('nn_leaderboard', JSON.stringify(highScores));
+                
+                renderLeaderboard();
+            } else {
+                feedback.className = "feedback error";
+                feedback.innerText = "Compilation Failed: Signal routing breakdown. The structural matrix sequence is incorrect.";
+            }
+        }
+
+        function renderLeaderboard() {
+            const leaderboardUi = document.getElementById('leaderboard-ui');
+            leaderboardUi.innerHTML = "";
+            
+            highScores.slice(0, 7).forEach((entry, idx) => {
+                const li = document.createElement('li');
+                li.className = `leaderboard-item ${idx < 2 ? 'top-rank' : ''}`;
+                
+                if(entry.name === currentUsername && isCompleted && entry.time === secondsElapsed) {
+                    li.style.backgroundColor = "rgba(56, 189, 248, 0.15)";
+                    li.style.border = "1px solid var(--accent-blue)";
+                }
+
+                li.innerHTML = `
+                    <span class="rank">#${idx + 1}</span>
+                    <span class="player-name">${escapeHtml(entry.name)}</span>
+                    <span class="player-time">${formatTime(entry.time)}</span>
+                `;
+                leaderboardUi.appendChild(li);
+            });
+        }
+
+        function clearLeaderboard() {
+            if (confirm("Are you sure you want to completely reset the dashboard records?")) {
+                localStorage.removeItem('nn_leaderboard');
+                highScores = [];
+                renderLeaderboard();
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function resetGame() {
+            slots.forEach(slot => {
+                if (slot.hasChildNodes()) {
+                    pool.appendChild(slot.firstChild);
+                }
+            });
+            blocks.forEach(block => {
+                block.style.borderColor = "";
+            });
+            feedback.style.display = "none";
+            feedback.className = "feedback";
+            if (selectedBlock) {
+                selectedBlock.style.borderColor = "";
+                selectedBlock = null;
+            }
+            if(isCompleted) {
+                startTimer();
+            }
+        }
+    </script>
+</body>
+</html>
+
+```
